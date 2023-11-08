@@ -1,20 +1,16 @@
 package telran.spring.service;
 
+import java.util.List;
+
 import telran.spring.Person;
 
 public interface GreetingsService {
-	String getGreetings(long id);
-	//TODO add For HW #57
-	//Person getPerson(long id);
-	//List<Person> getPersonByCity(String city);
 	
-	String addName(IdName idName);
-	String deleteName(long id);
-	String updateName(IdName idName);
-	//TODO update For HW #57
-	//Person addPerson(Person person);
-	//Person deletePerson(long id);
-	//Person updatePerson(Person person);
+	Person getPerson(long id);
+	List<Person> getPersonByCity(String city);
+	Person addPerson(Person person);
+	Person deletePerson(long id);
+	Person updatePerson(Person person);
 	
 }
 	

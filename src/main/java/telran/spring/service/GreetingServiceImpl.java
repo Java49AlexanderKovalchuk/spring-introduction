@@ -1,44 +1,63 @@
 package telran.spring.service;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+
 
 import org.springframework.stereotype.Service;
 
 import telran.spring.Person;
 @Service
 public class GreetingServiceImpl implements GreetingsService {
-	Map<Long, String> greetingsMap = new HashMap<>(Map.of(123l, "David", 124l, "Sara", 125l, "Rivka"));
-  	
+	  	
+	Map<Long, Person> personsMap = 
+			new HashMap<>(Map.of(123l, new Person(123l, "David", "Jerusalem"), 
+								124l, new Person(124l, "Sara" , "Tel Aviv"), 
+								125l, new Person(125l, "Rivka", "Lod"),
+								126l, new Person(126l, "Yosef", "Lod")));
+	
 	@Override
-	public String getGreetings(long id) {
-  		
-		String name = greetingsMap.getOrDefault(id, "Unknown Guest");
-  		return "Hello, " + name;	
-	}
-	@Override
-	public String addName(IdName idName) {
-		String name = greetingsMap.putIfAbsent(idName.id(), idName.name());
-		if(name != null) {
-			throw new IllegalStateException(idName.id() + " already exists"); 
+	public Person getPerson(long id) {
+		Person res = personsMap.get(id);
+		if(res == null) {
+			throw new IllegalStateException("ID " + id + " is not found");
 		}
-		return idName.name();
+		return res;
 	}
+	
 	@Override
-	public String deleteName(long id) {
-		String name = greetingsMap.remove(id);
-		if(name == null) {
-			throw new IllegalStateException(id + " not found");
-		}
-		return name;
+	public List<Person> getPersonByCity(String city) {
+		
+		return personsMap.values()
+				.stream().filter(p -> p.city().equalsIgnoreCase(city)).toList();
 	}
+	
 	@Override
-	public String updateName(IdName idName) {
-		if(!greetingsMap.containsKey(idName.id())) {
-			throw new IllegalStateException(idName.id() + " not found");
+	public Person addPerson(Person person) {
+
+		Person res = personsMap.putIfAbsent(person.id(), person);
+		if(res != null) {
+			throw new IllegalStateException("Person with ID " + person.id() + " is already exists");
 		}
-		greetingsMap.put(idName.id(), idName.name());
-		return idName.name();
+		return person;
+	}
+	
+	@Override
+	public Person deletePerson(long id) {
+
+		Person res = personsMap.remove(id);
+		if(res == null) {
+			throw new IllegalStateException("person with ID " + id + "is not found");
+		}
+		return res;
+	}
+	
+	@Override
+	public Person updatePerson(Person person) {
+		if(!personsMap.containsKey(person.id())) {
+			throw new IllegalStateException("person with ID " + person.id() + "is not found");
+		}
+		personsMap.put(person.id(), person);
+		return person;
 	}
 	
 }
