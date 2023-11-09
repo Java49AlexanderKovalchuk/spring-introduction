@@ -16,9 +16,9 @@ import telran.spring.service.IdName;
 public class GreetingsController {
 	final GreetingsService greetingsService;
 	
-	@GetMapping("id/{id}")
-	Person getPerson(@PathVariable long id) {
-		return greetingsService.getPerson(id);
+	@GetMapping("{id}")
+	String getGreetings(@PathVariable long id) {
+		return greetingsService.getGreetings(id);
 	}
 	
 	@GetMapping("city/{city}")
@@ -35,9 +35,14 @@ public class GreetingsController {
 	Person deletePerson(@PathVariable long id) {
 		return greetingsService.deletePerson(id);
 	}
-	
+	 
 	@PutMapping
 	Person updatePerson(@RequestBody Person person) {
 		return greetingsService.updatePerson(person);
+	}
+	
+	@GetMapping("id/{id}")
+	Person getPerson(@PathVariable long id) {
+		return greetingsService.getPerson(id);
 	}
 } 
