@@ -4,7 +4,9 @@ import java.util.List;
 
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import telran.spring.Person;
 import telran.spring.service.GreetingsService;
 import telran.spring.service.IdName;
@@ -12,37 +14,48 @@ import telran.spring.service.IdName;
 @RestController
 @RequestMapping("greetings")
 @RequiredArgsConstructor 
-
+@Slf4j
 public class GreetingsController {
 	final GreetingsService greetingsService;
 	
 	@GetMapping("{id}")
 	String getGreetings(@PathVariable long id) {
+		log.debug("method getGreetengs, IN: recieved id {}", id);
 		return greetingsService.getGreetings(id);
 	}
 	
-	@GetMapping("city/{city}")
-	List<Person> getPersonByCity(@PathVariable String city) {
-		return greetingsService.getPersonByCity(city);
+	@PostMapping
+	Person addPerson(@RequestBody @Valid Person person) {
+		log.debug("method: addPerson, IN: received {}", person);
+		return greetingsService.addPerson(person);
 	}
 	
-	@PostMapping
-	Person addPerson(@RequestBody Person person) {
-		return greetingsService.addPerson(person);
+	@PutMapping
+	Person updatePerson(@RequestBody @Valid Person person) {
+		log.debug("method: updatePerson, IN: received {}", person);
+		return greetingsService.updatePerson(person);
 	}
 	
 	@DeleteMapping("{id}")
 	Person deletePerson(@PathVariable long id) {
+		log.debug("method: deletePerson, IN: received id {}", id);
 		return greetingsService.deletePerson(id);
 	}
-	 
-	@PutMapping
-	Person updatePerson(@RequestBody Person person) {
-		return greetingsService.updatePerson(person);
-	}
 	
+	@GetMapping("city/{city}")
+	List<Person> getPersonByCity(@PathVariable String city) {
+		List<Person> result = greetingsService.getPersonByCity(city);
+		if(result.isEmpty()) {
+			log.warn("IN: received empy list for city: {}", city);
+		} else {
+			log.trace("OUT: result is {}", result);
+		}
+		return result;
+	}
+	 
 	@GetMapping("id/{id}")
 	Person getPerson(@PathVariable long id) {
+		log.debug("method: getPerson, IN: received id: {}", id);
 		return greetingsService.getPerson(id);
 	}
 } 
