@@ -20,7 +20,8 @@ public class GreetingsController {
 	
 	@GetMapping("{id}")
 	String getGreetings(@PathVariable long id) {
-		log.debug("method getGreetengs, IN: recieved id {}", id);
+		log.debug("method getGreetengs, recieved id {}", id);
+		
 		return greetingsService.getGreetings(id);
 	}
 	
@@ -32,30 +33,31 @@ public class GreetingsController {
 	
 	@PutMapping
 	Person updatePerson(@RequestBody @Valid Person person) {
-		log.debug("method: updatePerson, IN: received {}", person);
+		log.debug("method: updatePerson, received {}", person);
 		return greetingsService.updatePerson(person);
 	}
 	
 	@DeleteMapping("{id}")
 	Person deletePerson(@PathVariable long id) {
-		log.debug("method: deletePerson, IN: received id {}", id);
+		log.debug("method: deletePerson, received id {}", id);
 		return greetingsService.deletePerson(id);
 	}
 	
 	@GetMapping("city/{city}")
 	List<Person> getPersonByCity(@PathVariable String city) {
+		log.debug("method getPersonByCity, received city {}", city);
 		List<Person> result = greetingsService.getPersonByCity(city);
 		if(result.isEmpty()) {
-			log.warn("IN: received empy list for city: {}", city);
+			log.warn("received empy list for city: {}", city);
 		} else {
-			log.trace("OUT: result is {}", result);
+			log.trace("result is {}", result);
 		}
 		return result;
 	}
 	 
 	@GetMapping("id/{id}")
 	Person getPerson(@PathVariable long id) {
-		log.debug("method: getPerson, IN: received id: {}", id);
+		log.debug("method: getPerson, received id: {}", id);
 		return greetingsService.getPerson(id);
 	}
 } 

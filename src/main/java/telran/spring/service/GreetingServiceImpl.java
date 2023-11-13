@@ -1,14 +1,11 @@
 package telran.spring.service;
 
 import java.util.*;
-
-
 import org.springframework.stereotype.Service;
-
 import lombok.extern.slf4j.Slf4j;
 import telran.exeptions.NotFoundExeption;
 import telran.spring.Person;
-import telran.spring.controller.GreetingsController;
+
 @Service
 @Slf4j
 public class GreetingServiceImpl implements GreetingsService {
@@ -18,24 +15,27 @@ public class GreetingServiceImpl implements GreetingsService {
 	@Override
 	public String getGreetings(long id) {
 		Person person = greetingsMap.get(id);
-		String name = person == null ? "Unknown guest" : person.name();
+		//String name = person == null ? "Unknown guest" : person.name();
+		String name = "";
 		if(person == null) {
-	 		log.warn("Service. For recived id {} Person is null", id);
+	 		name = "unknown guest";
+			log.warn("person with id {} not found", id);
+		
 		} else {
-			log.debug("Service. Method getGreeting, IN: received id {}", id);
-			log.debug("Servise. Method getGreeting, OUT: Person's name is {}", name);
+			name = person.name();
+			log.debug("person name is {}", name);
 		}
 		return "Hello, " + name;
 	}
 	
 	@Override
 	public Person getPerson(long id) {
-		log.debug("Service. Method getPerson IN: received id is {}", id);
 		Person person = greetingsMap.get(id);
 		if(person == null) {
-			log.warn("Service. Method getPerson OUT: for received id person is {}", person);
+			log.warn("person with id {} not found", id);
+		
 		} else {
-			log.trace("Service. Method getPerson OUT: for received id person is {}", person);
+			log.debug("perdon with id {} exists", id);
 		}
 		return person;
 	}
@@ -51,11 +51,11 @@ public class GreetingServiceImpl implements GreetingsService {
 	@Override
 	public Person addPerson(Person person) {
 		long id = person.id();
-		log.debug("Service. Method addPerson, IN: received Person {}", person);
 		if(greetingsMap.containsKey(id)) {
 			throw new IllegalStateException(String.format("person with id %d already exists", id));
 		}
-		greetingsMap.put(id, person);		
+		greetingsMap.put(id, person);	
+		log.debug("person with id {} has been saved", id);
 		return person;
 	}
 	
@@ -64,20 +64,19 @@ public class GreetingServiceImpl implements GreetingsService {
 		if(!greetingsMap.containsKey(id)) {
 			throw new NotFoundExeption(String.format("person with id %d doesn't exist", id));
 		}
-		Person deletedPerson = greetingsMap.remove(id);
-		log.debug("Service. Method deletePerson, OUT: deleted person is {}", 
-				deletedPerson != null ? deletedPerson : null);
-		return  deletedPerson; 
+		Person person = greetingsMap.remove(id);
+		log.debug("person with id {} has been removed", id);
+		return  person; 
 	}
 	
 	@Override
 	public Person updatePerson(Person person) {
 		long id = person.id();
-		log.debug("Service. Method updatePerson, IN: received person {}", person);
 		if(!greetingsMap.containsKey(id)) {
 			throw new NotFoundExeption(String.format("person with id %d doesn't exist", id));
 		}
 		greetingsMap.put(id, person);
+		log.debug("person with id {} has been updated", person.id());
 		return person;
 	}
 	
