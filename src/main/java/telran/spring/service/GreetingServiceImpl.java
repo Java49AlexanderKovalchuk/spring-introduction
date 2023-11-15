@@ -1,7 +1,15 @@
 package telran.spring.service;
 
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 import telran.exeptions.NotFoundExeption;
 import telran.spring.Person;
@@ -11,21 +19,26 @@ import telran.spring.Person;
 public class GreetingServiceImpl implements GreetingsService {
 	  	
 	Map<Long, Person> greetingsMap = new HashMap<>();
-	
-	@Override
+	@Value("${app.greeting.message:Hello}")
+	String greetingMessage;
+	@Value("${app.unknown.name:unknown guest}")
+	String unknownName;
+	@Value("${app.file.name:persons.data}")
+	String fileName;
+	@Override   
 	public String getGreetings(long id) {
 		Person person = greetingsMap.get(id);
 		//String name = person == null ? "Unknown guest" : person.name();
 		String name = "";
 		if(person == null) {
-	 		name = "unknown guest";
+	 		name = unknownName;
 			log.warn("person with id {} not found", id);
 		
 		} else {
 			name = person.name();
 			log.debug("person name is {}", name);
 		}
-		return "Hello, " + name;
+		return String.format("%s, %s", greetingMessage, name);
 	}
 	
 	@Override
@@ -35,7 +48,7 @@ public class GreetingServiceImpl implements GreetingsService {
 			log.warn("person with id {} not found", id);
 		
 		} else {
-			log.debug("perdon with id {} exists", id);
+			log.debug("person with id {} exists", id);
 		}
 		return person;
 	}
@@ -78,6 +91,48 @@ public class GreetingServiceImpl implements GreetingsService {
 		greetingsMap.put(id, person);
 		log.debug("person with id {} has been updated", person.id());
 		return person;
+	}
+	
+	@Override
+	public void save(String fileName) {
+		// TODO saving persons data into ObjectOutputStream
+		log.info("persons data have been saved");
+		try (ObjectOutputStream output = new ObjectOutputStream(new FileOutputStream(fileName))){
+			output.writeObject(getListPersons());
+		} catch (Exception e) {
+			throw new RuntimeException(e.toString());
+		}
+	}
+	@Override
+	public void restore(String fileName) {
+		// TODO restoring from file using ObjectInputStream
+		if(Files.exists(Path.of(fileName))) {
+			try(ObjectInputStream input = new ObjectInputStream(new FileInputStream(fileName))){
+				List<Person> restoredPersons = (List<Person>) input.readObject();
+				restoredPersons.forEach(p -> addPerson(p));
+			} catch (Exception e) {
+				// TODO: handle exception
+				//throw new RuntimeException(e.toString());
+			}
+			log.info("restored from file {}", fileName);
+		} else {
+			log.error("file {} not exist", fileName);
+		}
+	}
+	@PostConstruct
+	void restoreFromFile() {
+		restore(fileName);
+		
+	}
+	@PreDestroy
+	void saveFile() {
+		save(fileName);
+	}
+	
+	List <Person> getListPersons(){
+		List <Person> listPersons = new ArrayList<>(greetingsMap.values());
+		log.debug("listPersons is {}", listPersons);
+		return listPersons;
 	}
 	
 } 

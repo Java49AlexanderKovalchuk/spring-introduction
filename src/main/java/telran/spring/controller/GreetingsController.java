@@ -20,7 +20,7 @@ public class GreetingsController {
 	
 	@GetMapping("{id}")
 	String getGreetings(@PathVariable long id) {
-		log.debug("method getGreetengs, recieved id {}", id);
+		log.debug("method getGreetengs,	recieved id {}", id);
 		
 		return greetingsService.getGreetings(id);
 	}
