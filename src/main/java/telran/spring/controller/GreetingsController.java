@@ -36,7 +36,7 @@ public class GreetingsController {
 		log.debug("method: updatePerson, received {}", person);
 		return greetingsService.updatePerson(person);
 	}
-	
+ 	
 	@DeleteMapping("{id}")
 	Person deletePerson(@PathVariable long id) {
 		log.debug("method: deletePerson, received id {}", id);

@@ -95,29 +95,27 @@ public class GreetingServiceImpl implements GreetingsService {
 	
 	@Override
 	public void save(String fileName) {
-		// TODO saving persons data into ObjectOutputStream
-		log.info("persons data have been saved");
-		try (ObjectOutputStream output = new ObjectOutputStream(new FileOutputStream(fileName))){
-			output.writeObject(getListPersons());
+		try (ObjectOutputStream output = new ObjectOutputStream(new FileOutputStream(fileName))) {
+			output.writeObject(new ArrayList<Person>(greetingsMap.values()));
+			log.info("persons data have been saved");
 		} catch (Exception e) {
-			throw new RuntimeException(e.toString());
+			log.error("{}", e);
 		}
 	}
+	@SuppressWarnings("unchecked")
 	@Override
 	public void restore(String fileName) {
-		// TODO restoring from file using ObjectInputStream
-		if(Files.exists(Path.of(fileName))) {
-			try(ObjectInputStream input = new ObjectInputStream(new FileInputStream(fileName))){
-				List<Person> restoredPersons = (List<Person>) input.readObject();
-				restoredPersons.forEach(p -> addPerson(p));
-			} catch (Exception e) {
-				// TODO: handle exception
-				//throw new RuntimeException(e.toString());
+		try(ObjectInputStream input = new ObjectInputStream(new FileInputStream(fileName))) {
+			List<Person> restoredPersons = (List<Person>) input.readObject();
+			restoredPersons.forEach(this::addPerson);
+			log.info("restored fronm file");
+			} catch (FileNotFoundException e) {
+				log.warn("No file with data found");
 			}
-			log.info("restored from file {}", fileName);
-		} else {
-			log.error("file {} not exist", fileName);
-		}
+			catch (Exception e) {
+				log.error("{}", e);
+			}
+	
 	}
 	@PostConstruct
 	void restoreFromFile() {
@@ -125,14 +123,10 @@ public class GreetingServiceImpl implements GreetingsService {
 		
 	}
 	@PreDestroy
-	void saveFile() {
+	void saveFile() {	
 		save(fileName);
 	}
 	
-	List <Person> getListPersons(){
-		List <Person> listPersons = new ArrayList<>(greetingsMap.values());
-		log.debug("listPersons is {}", listPersons);
-		return listPersons;
-	}
+	
 	
 } 
