@@ -2,15 +2,18 @@ package telran.spring.calculator.service;
 
 import org.springframework.stereotype.Service;
 
+import lombok.extern.slf4j.Slf4j;
 import telran.spring.calculator.dto.OperationData;
 @Service
+@Slf4j
 public class ArithmeticCalculatorService implements CalculatorService {
 
 	@Override
 	public String calculate(OperationData operationData) {
 		double[] operands = getOperands(operationData);
 		String operation = operationData.operation();
-		
+		log.debug("IN operation: {}", operation);
+		log.debug("parsed operands: {}", operands);
 		return switch(operation) {
 		case "add" -> Double.toString(operands[0] + operands[1]);
 		case "subtract" -> Double.toString(operands[0] - operands[1]);

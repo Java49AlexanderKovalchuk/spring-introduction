@@ -26,16 +26,20 @@ public class CalculatorController {
 		servicesMap = calculatorServices.stream() 
 		.collect(Collectors.toMap(service -> service.getCalculationType(), 
 		service -> service));
-		log.debug("sevices: {}", servicesMap.keySet());
+		log.debug("services: {}", servicesMap.keySet());
 	}
 	
 	@PostMapping
 	String calculate(@RequestBody @Valid OperationData operationData) {
 		String type = operationData.type();
 		CalculatorService calculatorService = servicesMap.get(type);
+		
 		if(calculatorService == null) {
+			log.warn("calculator service is null");
 			throw new NotFoundExeption(String.format("type %s not found", type));
 		}
+		log.debug("IN calculation type: {}", calculatorService.getCalculationType());
+		log.debug("IN method: calculate, {}", operationData.toString());
 		return calculatorService.calculate(operationData);
 	}
 	

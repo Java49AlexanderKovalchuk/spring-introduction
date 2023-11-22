@@ -5,13 +5,17 @@ import java.time.temporal.ChronoUnit;
 
 import org.springframework.stereotype.Service;
 
+import lombok.extern.slf4j.Slf4j;
 import telran.spring.calculator.dto.OperationData;
 @Service
+@Slf4j
 public class DatesCalculatorService implements CalculatorService {
 
 	@Override
 	public String calculate(OperationData operationData) {
+		log.debug("IN service, operation data: {}", operationData.toString());
 		String operation = operationData.operation();
+		log.debug("IN service, operation: {}", operation);
 		return switch(operation) {
 			case "between" -> operationBetween(operationData);
 			case "before" -> String.format("it was %s",
